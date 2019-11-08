@@ -104,6 +104,9 @@ button {
   cursor: pointer; }
   .tool-item:hover {
     background-color: #f8f8f8; }
+  .tool-item--selected {
+    border-left: .4rem solid #757575;
+    padding-left: .2rem; }
   .tool-item__icon {
     width: 2.4rem;
     height: 2.4rem;

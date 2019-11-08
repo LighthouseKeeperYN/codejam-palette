@@ -1,15 +1,17 @@
 const canvas = document.querySelector('.canvas');
 const ctx = canvas.getContext('2d');
 
-let pixelSize = 4;
+const pixelSize = 64;
 
-let color = {
-  colorA: [255, 255, 255],
-  colorB: [0, 0, 0],
-  curr: [0, 0, 0],
-  prevColor: [0, 0, 0]
-}
-let cursor = {
+let selectedTool = 'pencil';
+
+const color = {
+  colorA: [255, 0, 255, 255],
+  colorB: [0, 0, 0, 255],
+  curr: [0, 0, 0, 255],
+  prevColor: [0, 0, 0, 255],
+};
+const cursor = {
   curr: {
     x: 0,
     y: 0,
@@ -17,22 +19,30 @@ let cursor = {
   last: {
     x: 0,
     y: 0,
-  }
-}
+  },
+};
 
 let isDrawing = false;
 ctx.fillStyle = colorToString(color.colorA);
 
-function colorToString(color) {
-  return `rgba(${color[0]},${color[1]},${color[2]},${color[3] !== 'undefined' ? color[3] : 1})`
+function colorToString(clr) {
+  return `rgba(${clr[0]},${clr[1]},${clr[2]},${clr[3] / 255})`;
+}
+
+function scaleDown(coordinate) {
+  return Math.floor(coordinate / pixelSize);
+}
+
+function toPixel(coordinate) {
+  return Math.floor(coordinate / pixelSize) * pixelSize;
 }
 
 function drawLine(x0, y0, x1, y1) {
-  let dx = Math.abs(x1 - x0);
-  let sx = x0 < x1 ? 1 : -1;
+  const dx = Math.abs(x1 - x0);
+  const sx = x0 < x1 ? 1 : -1;
 
-  let dy = Math.abs(y1 - y0);
-  let sy = y0 < y1 ? 1 : -1;
+  const dy = Math.abs(y1 - y0);
+  const sy = y0 < y1 ? 1 : -1;
 
   let err = (dx > dy ? dx : -dy) / 2;
 
@@ -40,7 +50,7 @@ function drawLine(x0, y0, x1, y1) {
     ctx.fillRect((x0 * pixelSize), (y0 * pixelSize), pixelSize, pixelSize);
 
     if (x0 === x1 && y0 === y1) break;
-    let e2 = err;
+    const e2 = err;
     if (e2 > -dx) {
       err -= dy;
       x0 += sx;
@@ -52,44 +62,77 @@ function drawLine(x0, y0, x1, y1) {
   }
 }
 
-// function toCanvasCoordinates(cursor) {
-//   return [cursor[0] - canvas.offsetLeft, cursor[1] - canvas.offsetTop];
-// }
-// function toScreenCoordinates(cursor) {
-//   return [cursor[0] + canvas.offsetLeft, cursor[1] + canvas.offsetTop];
-// }
+function fill(startX, startY) {
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const startColor = ctx.getImageData(startX, startY, 1, 1).data;
+  const startR = startColor[0];
+  const startG = startColor[1];
+  const startB = startColor[2];
+  const startA = startColor[3];
+  const pixelStack = [[startX, startY]];
 
-canvas.addEventListener('mousedown', e => {
-  isDrawing = true;
+  function matchStartColor(pixelPos) {
+    const r = imgData.data[pixelPos];
+    const g = imgData.data[pixelPos + 1];
+    const b = imgData.data[pixelPos + 2];
+    const a = imgData.data[pixelPos + 3];
 
-  cursor.last.x = e.layerX;
-  cursor.last.y = e.layerY;
+    return (r === startR && g === startG && b === startB && a === startA);
+  }
 
-  ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
-});
+  function colorPixel(pixelPos) {
+    imgData.data[pixelPos] = color.colorA[0];
+    imgData.data[pixelPos + 1] = color.colorA[1];
+    imgData.data[pixelPos + 2] = color.colorA[2];
+    imgData.data[pixelPos + 3] = color.colorA[3] * 255;
+  }
 
-canvas.addEventListener('mouseup', e => {
-  isDrawing = false;
-});
+  while (pixelStack.length) {
+    const newPos = pixelStack.pop();
+    const x = newPos[0];
+    let y = newPos[1];
+    let leftMarked = false;
+    let rightMarked = false;
 
-canvas.addEventListener('mousemove', e => {
-  if (!isDrawing) return;
+    let pixelPos = (y * canvas.width + x) * 4;
 
-  cursor.curr.x = e.layerX;
-  cursor.curr.y = e.layerY;
+    while (y-- >= 0 && matchStartColor(pixelPos)) {
+      pixelPos -= canvas.width * 4;
+    }
 
-  pencil();
+    pixelPos += canvas.width * 4;
+    y++;
 
-  cursor.last.x = cursor.curr.x;
-  cursor.last.y = cursor.curr.y;
-});
+    while (y++ <= canvas.width && matchStartColor(pixelPos)) {
+      colorPixel(pixelPos);
 
-function scaleDown(coordinate) {
-  return Math.floor(coordinate / pixelSize);
-}
+      if (x > 0) {
+        if (matchStartColor(pixelPos - 4)) {
+          if (!leftMarked) {
+            pixelStack.push([x - 1, y]);
+            leftMarked = true;
+          }
+        } else if (leftMarked) {
+          leftMarked = false;
+        }
+      }
 
-function toPixel(coordinate) {
-  return Math.floor(coordinate / pixelSize) * pixelSize;
+      if (x <= canvas.width) {
+        if (matchStartColor(pixelPos + 4)) {
+          if (!rightMarked) {
+            pixelStack.push([x + 1, y]);
+            rightMarked = true;
+          }
+        } else if (rightMarked) {
+          rightMarked = false;
+        }
+      }
+
+      pixelPos += canvas.width * 4;
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
 }
 
 function pencil() {
@@ -98,37 +141,58 @@ function pencil() {
     scaleDown(cursor.last.y),
     scaleDown(cursor.curr.x),
     scaleDown(cursor.curr.y)
-  )
+  );
 }
 
+const tools = {
+  pencilButton: document.getElementById('pencil'),
+  bucketButton: document.getElementById('bucket'),
+  colorPickerButton: document.getElementById('color-picker')
+}
 
-function paint(cellSize, img, format) {
-  if (format === 'hex') {
-    for (let y = 0; y < cellSize; y++) {
-      for (let x = 0; x < cellSize; x++) {
-        ctx.fillStyle = `#${img[y][x]}`;
-        ctx.fillRect((512 / cellSize) * y, (512 / cellSize) * x, 512 / cellSize, 512 / cellSize);
-      }
-    }
+Object.values(tools).forEach(tool => {
+  tool.addEventListener('click', e => {
+    Object.values(tools).forEach(button => {
+      button.classList.remove('tool-item--selected');
+    });
+
+    selectedTool = tool.id;
+    tool.classList.add('tool-item--selected');
+  });
+})
+
+canvas.addEventListener('mousedown', (e) => {
+
+
+  if (selectedTool === 'bucket') {
+    fill(e.layerX, e.layerY);
+  }
+  if (selectedTool === 'pencil') {
+    isDrawing = true;
+    
+    cursor.last.x = e.layerX;
+    cursor.last.y = e.layerY;
+  
+    ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (selectedTool === 'pencil' && isDrawing) {
+    cursor.curr.x = e.layerX;
+    cursor.curr.y = e.layerY;
+
+    pencil();
+
+    cursor.last.x = cursor.curr.x;
+    cursor.last.y = cursor.curr.y;
   }
 
-  if (format === 'rgb') {
-    for (let y = 0; y < cellSize; y++) {
-      for (let x = 0; x < cellSize; x++) {
-        ctx.fillStyle = `rgba(${img[y][x][0]},${img[y][x][1]},${img[y][x][2]},${img[y][x][3]})`;
-        ctx.fillRect(16 * y, 16 * x, 16, 16);
-      }
-    }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (selectedTool === 'pencil') {
+    isDrawing = false;
   }
-}
-
-function loadImg(pixelSize, src, format) {
-  let img;
-
-  fetch(src)
-    .then((res) => res.json())
-    .then((data) => { img = data; })
-    .then(() => paint(pixelSize, img, format));
-}
-
+});
 
