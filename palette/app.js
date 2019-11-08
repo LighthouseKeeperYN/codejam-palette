@@ -1,7 +1,11 @@
 const canvas = document.querySelector('.canvas');
 const ctx = canvas.getContext('2d');
 
-let cursorX, cursorY, ;
+let cursorX;
+let cursorY;
+let currColor;
+let prevColor;
+
 
 function paint(cellSize, img, format) {
   if (format === 'hex') {
