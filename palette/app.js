@@ -1,6 +1,8 @@
 const canvas = document.querySelector('.canvas');
 const ctx = canvas.getContext('2d');
 
+let cursorX, cursorY, ;
+
 function paint(cellSize, img, format) {
   if (format === 'hex') {
     for (let y = 0; y < cellSize; y++) {
@@ -30,14 +32,11 @@ function loadImg(pixelSize, src, format) {
     .then(() => paint(pixelSize, img, format));
 }
 
-const buttons = document.querySelector('.s-canvas-buttons');
-buttons.children[0].addEventListener('click', () => loadImg(4, './assets/canvas/4x4.json', 'hex'));
-buttons.children[1].addEventListener('click', () => loadImg(32, './assets/canvas/32x32.json', 'rgb'));
-buttons.children[2].addEventListener('click', () => {
-  const img = new Image();
-  img.src = './assets/canvas/image.png';
-  img.onload = () => {
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, 512, 512);
-  };
-});
+
+function toPixel(coordinate, cellSize) {
+  return Math.floor(coordinate / cellSize) * cellSize;
+}
+
+function pencil(color) {
+
+}
