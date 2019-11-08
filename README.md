@@ -1,2 +1,7 @@
-# lighthousekeeperyn-RS2019Q3
-Private repository for @lighthousekeeperyn
+# repair-design-project
+
+* Shift + Alt to change language
+
+* npm install - install dependencies
+* npm run build - compile sass
+* npm run lint - use ESLint
