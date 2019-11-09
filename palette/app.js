@@ -198,7 +198,7 @@ function selectTool(tl) {
   });
 
   selectedTool = tl.id;
-  localStorage.setItem('selectedTool', tl.id)
+  localStorage.setItem('selectedTool', tl.id);
   tl.classList.add('tool-item--selected');
 }
 
@@ -210,7 +210,7 @@ Object.values(tools).forEach((tool) => {
   });
 });
 
-document.addEventListener('keypress', e => {
+document.addEventListener('keypress', (e) => {
   if (e.code === 'KeyP') {
     selectTool(tools.pencilButton);
   }
@@ -315,5 +315,3 @@ document.addEventListener('mouseup', () => {
     localStorage.setItem('imgData', canvas.toDataURL());
   }
 });
-
-
