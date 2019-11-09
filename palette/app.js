@@ -3,6 +3,8 @@ const ctx = canvas.getContext('2d');
 
 const pixelSize = 128;
 let selectedTool = 'pencil';
+// let inProgress = false;
+let isDrawing = false;
 
 const cursor = {
   curr: {
@@ -14,6 +16,12 @@ const cursor = {
     y: 0,
   },
 };
+
+const tools = {
+  pencilButton: document.getElementById('pencil'),
+  bucketButton: document.getElementById('bucket'),
+  colorPickerButton: document.getElementById('color-picker')
+}
 
 const color = {
   curr: JSON.parse(localStorage.getItem('color-curr')) || [255, 255, 255],
@@ -28,65 +36,6 @@ const colorButton = {
   a: document.getElementById('color-a'),
   b: document.getElementById('color-b')
 }
-
-Object.keys(colorButton).forEach(name => {
-  colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
-});
-
-Object.values(colorButton).forEach(button => {
-  button.addEventListener('change', e => {
-    e.target.parentElement.style.backgroundColor = e.target.value;
-    if (e.target.id === 'color-curr') {
-      colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
-      localStorage.setItem('color-prev', JSON.stringify(color.curr))
-      color.curr = hexToRGB(e.target.value);
-      localStorage.setItem('color-curr', JSON.stringify(color.curr))
-    }
-    // if (e.target.id === 'color-prev') {
-    //   color.prev = hexToRGB(e.target.value);
-    //   localStorage.setItem('color-prev', JSON.stringify(color.prev))
-    // }
-    if (e.target.id === 'color-a') {
-      color.a = hexToRGB(e.target.value);
-      localStorage.setItem('color-a', JSON.stringify(color.a))
-    }
-    if (e.target.id === 'color-b') {
-      color.b = hexToRGB(e.target.value);
-      localStorage.setItem('color-b', JSON.stringify(color.b))
-    }
-  });
-
-  button.parentElement.parentElement.addEventListener('click', e => {
-    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
-      if (e.currentTarget.children[0].children[0].id === 'color-prev') {
-        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
-        [color.prev, color.curr] = [color.curr, color.prev];
-        localStorage.setItem('color-curr', JSON.stringify(color.curr));
-        localStorage.setItem('color-prev', JSON.stringify(color.prev));
-      }
-      if (e.currentTarget.children[0].children[0].id === 'color-a') {
-        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.a);
-        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-        localStorage.setItem('color-curr', JSON.stringify(color.a));
-        localStorage.setItem('color-prev', JSON.stringify(color.curr));
-        color.prev = color.curr;
-        color.curr = color.a;
-
-      }
-      if (e.currentTarget.children[0].children[0].id === 'color-b') {
-        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.b);
-        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-        localStorage.setItem('color-curr', JSON.stringify(color.b));
-        localStorage.setItem('color-prev', JSON.stringify(color.curr));
-        color.prev = color.curr;
-        color.curr = color.b;
-      }
-    }
-  });
-});
-
-let isDrawing = false;
-
 
 function rgbToHex(rgb) {
   return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
@@ -139,31 +88,34 @@ function drawLine(x0, y0, x1, y1) {
 }
 
 function fill(startX, startY) {
-  inProgress = true;
-
   const imgData = ctx.getImageData(0, 0, 512, 512);
   const startColor = ctx.getImageData(startX, startY, 1, 1).data;
   const startR = startColor[0];
   const startG = startColor[1];
   const startB = startColor[2];
-  const startA = startColor[3];
+  //const startA = startColor[3];
   const pixelStack = [[startX, startY]];
 
   function matchStartColor(pixelPos) {
     const r = imgData.data[pixelPos];
     const g = imgData.data[pixelPos + 1];
     const b = imgData.data[pixelPos + 2];
-    const a = imgData.data[pixelPos + 3];
+    //const a = imgData.data[pixelPos + 3];
 
-    return (r === startR && g === startG && b === startB && a === startA);
+    return (r === startR && g === startG && b === startB);
   }
 
   function paintPixel(pixelPos) {
     imgData.data[pixelPos] = color.curr[0];
     imgData.data[pixelPos + 1] = color.curr[1];
     imgData.data[pixelPos + 2] = color.curr[2];
-    imgData.data[pixelPos + 3] = color.curr[3] * 255; // * 255
+    imgData.data[pixelPos + 3] = 255 // color.curr[3] * 255;
   }
+
+  if (startColor[0] === color.curr[0]
+    && startColor[1] === color.curr[1]
+    && startColor[2] === color.curr[2]
+  ) return;
 
   while (pixelStack.length) {
     const newPos = pixelStack.pop();
@@ -222,11 +174,61 @@ function pencil() {
   );
 }
 
-const tools = {
-  pencilButton: document.getElementById('pencil'),
-  bucketButton: document.getElementById('bucket'),
-  colorPickerButton: document.getElementById('color-picker')
-}
+Object.keys(colorButton).forEach(name => {
+  colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
+});
+
+Object.values(colorButton).forEach(button => {
+  button.addEventListener('change', e => {
+    e.target.parentElement.style.backgroundColor = e.target.value;
+    if (e.target.id === 'color-curr') {
+      colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
+      localStorage.setItem('color-prev', JSON.stringify(color.curr))
+      color.curr = hexToRGB(e.target.value);
+      localStorage.setItem('color-curr', JSON.stringify(color.curr))
+    }
+    // if (e.target.id === 'color-prev') {
+    //   color.prev = hexToRGB(e.target.value);
+    //   localStorage.setItem('color-prev', JSON.stringify(color.prev))
+    // }
+    if (e.target.id === 'color-a') {
+      color.a = hexToRGB(e.target.value);
+      localStorage.setItem('color-a', JSON.stringify(color.a))
+    }
+    if (e.target.id === 'color-b') {
+      color.b = hexToRGB(e.target.value);
+      localStorage.setItem('color-b', JSON.stringify(color.b))
+    }
+  });
+
+  button.parentElement.parentElement.addEventListener('click', e => {
+    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
+      if (e.currentTarget.children[0].children[0].id === 'color-prev') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
+        [color.prev, color.curr] = [color.curr, color.prev];
+        localStorage.setItem('color-curr', JSON.stringify(color.curr));
+        localStorage.setItem('color-prev', JSON.stringify(color.prev));
+      }
+      if (e.currentTarget.children[0].children[0].id === 'color-a') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.a);
+        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+        localStorage.setItem('color-curr', JSON.stringify(color.a));
+        localStorage.setItem('color-prev', JSON.stringify(color.curr));
+        color.prev = color.curr;
+        color.curr = color.a;
+
+      }
+      if (e.currentTarget.children[0].children[0].id === 'color-b') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.b);
+        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+        localStorage.setItem('color-curr', JSON.stringify(color.b));
+        localStorage.setItem('color-prev', JSON.stringify(color.curr));
+        color.prev = color.curr;
+        color.curr = color.b;
+      }
+    }
+  });
+});
 
 Object.values(tools).forEach(tool => {
   tool.addEventListener('click', e => {
@@ -240,12 +242,14 @@ Object.values(tools).forEach(tool => {
 });
 
 canvas.addEventListener('mousedown', (e) => {
-  ctx.fillStyle = colorToString(color.curr);
-
-  if (selectedTool === 'bucket') {
+  if (selectedTool === 'bucket') { //&& !inProgress
+    ctx.fillStyle = colorToString(color.curr);
+    inProgress = true;
     fill(e.layerX, e.layerY);
+    // setTimeout(() => inProgress = false, 300);
   }
   if (selectedTool === 'pencil') {
+    ctx.fillStyle = colorToString(color.curr);
     isDrawing = true;
 
     cursor.last.x = e.layerX;
