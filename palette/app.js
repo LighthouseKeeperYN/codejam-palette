@@ -16,10 +16,10 @@ const cursor = {
 };
 
 const color = {
-  curr: JSON.parse(localStorage.getItem('color-curr')) || [0, 0, 0],
-  prev: JSON.parse(localStorage.getItem('color-prev')) || [0, 0, 0],
+  curr: JSON.parse(localStorage.getItem('color-curr')) || [255, 255, 255],
+  prev: JSON.parse(localStorage.getItem('color-prev')) || [255, 255, 255],
   a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 0],
-  b: JSON.parse(localStorage.getItem('color-b')) || [0, 0, 0]
+  b: JSON.parse(localStorage.getItem('color-b')) || [255, 255, 255]
 };
 
 const colorButton = {
@@ -30,8 +30,7 @@ const colorButton = {
 }
 
 Object.keys(colorButton).forEach(name => {
-  colorButton[name].parentElement.style.backgroundColor = 
-  `rgb(${color[name][0]},${color[name][1]},${color[name][2]})`;
+  colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
 });
 
 Object.values(colorButton).forEach(button => {
@@ -43,10 +42,10 @@ Object.values(colorButton).forEach(button => {
       color.curr = hexToRGB(e.target.value);
       localStorage.setItem('color-curr', JSON.stringify(color.curr))
     }
-    if (e.target.id === 'color-prev') {
-      color.prev = hexToRGB(e.target.value);
-      localStorage.setItem('color-prev', JSON.stringify(color.prev))
-    }
+    // if (e.target.id === 'color-prev') {
+    //   color.prev = hexToRGB(e.target.value);
+    //   localStorage.setItem('color-prev', JSON.stringify(color.prev))
+    // }
     if (e.target.id === 'color-a') {
       color.a = hexToRGB(e.target.value);
       localStorage.setItem('color-a', JSON.stringify(color.a))
@@ -58,21 +57,40 @@ Object.values(colorButton).forEach(button => {
   });
 
   button.parentElement.parentElement.addEventListener('click', e => {
-    if (e.target.tagName === 'LI' && e.target.children[0].children[0].id === 'color-a') {
-      colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
-      color.curr = color.a;
-      colorButton.curr.parentElement.style.backgroundColor = rgbToHex(color.curr);
+    console.log(e.currentTarget)
+    console.log(e.target)
+    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
+      && e.currentTarget.children[0].children[0].id === 'color-prev') {
+
+      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
+      localStorage.setItem('color-curr', JSON.stringify(color.prev));
+      color.curr = color.prev;
     }
-    if (e.target.tagName === 'LI' && e.target.children[0].children[0].id === 'color-b') {
-      colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
+    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
+      && e.currentTarget.children[0].children[0].id === 'color-a') {
+
+      colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+      localStorage.setItem('color-prev', JSON.stringify(color.curr));
+      color.prev = color.curr;
+      color.curr = color.a;
+      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.curr);
+      localStorage.setItem('color-curr', JSON.stringify(color.a));
+    }
+    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
+      && e.currentTarget.children[0].children[0].id === 'color-b') {
+
+      colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+      localStorage.setItem('color-prev', JSON.stringify(color.curr));
+      color.prev = color.curr;
       color.curr = color.b;
-      colorButton.curr.parentElement.style.backgroundColor = rgbToHex(color.curr);
+      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.curr);
+      localStorage.setItem('color-curr', JSON.stringify(color.b));
     }
   });
 });
 
 let isDrawing = false;
-ctx.fillStyle = colorToString(color.curr);
+
 
 function rgbToHex(rgb) {
   return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
@@ -148,7 +166,7 @@ function fill(startX, startY) {
     imgData.data[pixelPos] = color.curr[0];
     imgData.data[pixelPos + 1] = color.curr[1];
     imgData.data[pixelPos + 2] = color.curr[2];
-    imgData.data[pixelPos + 3] = color.curr[3]; // * 255
+    imgData.data[pixelPos + 3] = color.curr[3] * 255; // * 255
   }
 
   while (pixelStack.length) {
@@ -226,6 +244,8 @@ Object.values(tools).forEach(tool => {
 });
 
 canvas.addEventListener('mousedown', (e) => {
+  ctx.fillStyle = colorToString(color.curr);
+
   if (selectedTool === 'bucket') {
     fill(e.layerX, e.layerY);
   }
