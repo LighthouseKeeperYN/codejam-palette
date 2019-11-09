@@ -103,10 +103,10 @@ button {
   align-items: center;
   cursor: pointer; }
   .tool-item:hover {
-    background-color: #f8f8f8; }
+    background-color: #d1e9ff; }
   .tool-item--selected {
-    border-left: .4rem solid #757575;
-    padding-left: .2rem; }
+    background-color: #d1e9ff;
+    cursor: unset; }
   .tool-item__icon {
     width: 2.4rem;
     height: 2.4rem;
@@ -114,12 +114,11 @@ button {
     margin-right: 3.3rem; }
   .tool-item__color-circle {
     border-radius: 50%;
-    border: .1rem solid black; }
-    .tool-item__color-circle--grey {
-      background-color: #c4c4c4; }
-    .tool-item__color-circle--green {
-      background-color: #41F795; }
-    .tool-item__color-circle--red {
-      background-color: #F74141; }
-    .tool-item__color-circle--blue {
-      background-color: #41B6F7; }
+    border: .1rem solid black;
+    cursor: pointer; }
+
+.color-input {
+  width: 2.4rem;
+  height: 2.4rem;
+  transform: translate(-0.1rem, -0.1rem);
+  visibility: hidden; }

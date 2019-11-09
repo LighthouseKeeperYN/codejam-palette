@@ -1,3 +1,5 @@
+const rgbToHex = require('./rgb-to-hex.js');
+
 const canvas = document.querySelector('.canvas');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = '#e5e5e5';
@@ -10,7 +12,7 @@ if (localStorage.getItem('imgData')) {
   };
 }
 
-const pixelSize = 16;
+const pixelSize = 32;
 let selectedTool = localStorage.getItem('selectedTool') || 'pencil';
 let isDrawing = false;
 
@@ -45,9 +47,9 @@ const colorButton = {
   b: document.getElementById('color-b'),
 };
 
-function rgbToHex(rgb) {
-  return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1)}`;
-}
+// function rgbToHex(rgb) {
+//   return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1)}`;
+// }
 
 function hexToRGB(hex) {
   const m = hex.match(/^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
