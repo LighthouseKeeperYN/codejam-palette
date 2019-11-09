@@ -113,7 +113,8 @@ button {
     margin-right: 3.3rem; }
   .tool-item__color-circle {
     border-radius: 50%;
-    border: .1rem solid black; }
+    border: .1rem solid black;
+    cursor: pointer; }
     .tool-item__color-circle--grey {
       background-color: #c4c4c4; }
     .tool-item__color-circle--green {
@@ -122,3 +123,9 @@ button {
       background-color: #F74141; }
     .tool-item__color-circle--blue {
       background-color: #41B6F7; }
+
+.color-input {
+  width: 2.4rem;
+  height: 2.4rem;
+  transform: translate(-0.1rem, -0.1rem);
+  visibility: hidden; }

@@ -116,6 +116,7 @@
   &__color-circle {
     border-radius: 50%;
     border: .1rem solid black;
+    cursor: pointer;
 
     &--grey {
       background-color: #c4c4c4;
@@ -133,4 +134,11 @@
       background-color: #41B6F7;
     }
   }
+}
+
+.color-input {
+  width: 2.4rem;
+  height: 2.4rem;
+  transform: translate(-.1rem, -.1rem);
+  visibility: hidden;
 }
