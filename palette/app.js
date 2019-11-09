@@ -16,10 +16,10 @@ const cursor = {
 };
 
 const color = {
-  curr: [0, 0, 0],
-  prev: [0, 0, 0],
-  a: [255, 0, 255],
-  b: [0, 0, 0]
+  curr: JSON.parse(localStorage.getItem('color-curr')) || [0, 0, 0],
+  prev: JSON.parse(localStorage.getItem('color-prev')) || [0, 0, 0],
+  a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 0],
+  b: JSON.parse(localStorage.getItem('color-b')) || [0, 0, 0]
 };
 
 const colorButton = {
@@ -29,23 +29,31 @@ const colorButton = {
   b: document.getElementById('color-b')
 }
 
-Object.values(colorButton).forEach(button => {
-  button.parentElement.style.backgroundColor = button.value;
+Object.keys(colorButton).forEach(name => {
+  colorButton[name].parentElement.style.backgroundColor = 
+  `rgb(${color[name][0]},${color[name][1]},${color[name][2]})`;
+});
 
+Object.values(colorButton).forEach(button => {
   button.addEventListener('change', e => {
     e.target.parentElement.style.backgroundColor = e.target.value;
     if (e.target.id === 'color-curr') {
       colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
+      localStorage.setItem('color-prev', JSON.stringify(color.curr))
       color.curr = hexToRGB(e.target.value);
+      localStorage.setItem('color-curr', JSON.stringify(color.curr))
     }
     if (e.target.id === 'color-prev') {
       color.prev = hexToRGB(e.target.value);
+      localStorage.setItem('color-prev', JSON.stringify(color.prev))
     }
     if (e.target.id === 'color-a') {
       color.a = hexToRGB(e.target.value);
+      localStorage.setItem('color-a', JSON.stringify(color.a))
     }
     if (e.target.id === 'color-b') {
       color.b = hexToRGB(e.target.value);
+      localStorage.setItem('color-b', JSON.stringify(color.b))
     }
   });
 
