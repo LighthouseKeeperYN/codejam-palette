@@ -10,7 +10,7 @@ if (localStorage.getItem('imgData')) {
   };
 }
 
-const pixelSize = 128;
+const pixelSize = 16;
 let selectedTool = localStorage.getItem('selectedTool') || 'pencil';
 let isDrawing = false;
 
