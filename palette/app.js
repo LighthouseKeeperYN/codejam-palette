@@ -3,12 +3,12 @@ const ctx = canvas.getContext('2d');
 ctx.fillStyle = '#e5e5e5';
 ctx.fillRect(0, 0, canvas.width, canvas.clientWidth);
 if (localStorage.getItem('imgData')) {
-  let img = new Image;
+  const img = new Image();
   img.src = localStorage.getItem('imgData');
-  img.onload = function () {
+  img.onload = () => {
     ctx.drawImage(img, 0, 0);
   };
-};
+}
 
 const pixelSize = 128;
 let selectedTool = 'pencil';
@@ -29,25 +29,25 @@ const cursor = {
 const tools = {
   pencilButton: document.getElementById('pencil'),
   bucketButton: document.getElementById('bucket'),
-  colorPickerButton: document.getElementById('color-picker')
-}
+  colorPickerButton: document.getElementById('color-picker'),
+};
 
 const color = {
   curr: JSON.parse(localStorage.getItem('color-curr')) || [255, 255, 255],
   prev: JSON.parse(localStorage.getItem('color-prev')) || [255, 255, 255],
   a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 0],
-  b: JSON.parse(localStorage.getItem('color-b')) || [255, 255, 255]
+  b: JSON.parse(localStorage.getItem('color-b')) || [255, 255, 255],
 };
 
 const colorButton = {
   curr: document.getElementById('color-curr'),
   prev: document.getElementById('color-prev'),
   a: document.getElementById('color-a'),
-  b: document.getElementById('color-b')
-}
+  b: document.getElementById('color-b'),
+};
 
 function rgbToHex(rgb) {
-  return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+  return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1)}`;
 }
 
 function hexToRGB(hex) {
@@ -55,7 +55,7 @@ function hexToRGB(hex) {
   return [
     parseInt(m[1], 16),
     parseInt(m[2], 16),
-    parseInt(m[3], 16)
+    parseInt(m[3], 16),
   ];
 }
 
@@ -101,7 +101,7 @@ function pencil() {
     scaleDown(cursor.last.x),
     scaleDown(cursor.last.y),
     scaleDown(cursor.curr.x),
-    scaleDown(cursor.curr.y)
+    scaleDown(cursor.curr.y),
   );
 }
 
@@ -111,14 +111,14 @@ function fill(startX, startY) {
   const startR = startColor[0];
   const startG = startColor[1];
   const startB = startColor[2];
-  //const startA = startColor[3];
+  // const startA = startColor[3];
   const pixelStack = [[startX, startY]];
 
   function matchStartColor(pixelPos) {
     const r = imgData.data[pixelPos];
     const g = imgData.data[pixelPos + 1];
     const b = imgData.data[pixelPos + 2];
-    //const a = imgData.data[pixelPos + 3];
+    // const a = imgData.data[pixelPos + 3];
 
     return (r === startR && g === startG && b === startB);
   }
@@ -127,7 +127,7 @@ function fill(startX, startY) {
     imgData.data[pixelPos] = color.curr[0];
     imgData.data[pixelPos + 1] = color.curr[1];
     imgData.data[pixelPos + 2] = color.curr[2];
-    imgData.data[pixelPos + 3] = 255 // color.curr[3] * 255;
+    imgData.data[pixelPos + 3] = 255; // color.curr[3] * 255;
   }
 
   if (startColor[0] === color.curr[0]
@@ -184,7 +184,7 @@ function fill(startX, startY) {
 }
 
 function colorPicker(x, y) {
-  let pxData = ctx.getImageData(x, y, 1, 1).data.slice(0, -1);
+  const pxData = ctx.getImageData(x, y, 1, 1).data.slice(0, -1);
 
   colorButton.curr.parentElement.style.backgroundColor = colorToString(pxData);
   colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
@@ -194,13 +194,13 @@ function colorPicker(x, y) {
   color.curr = pxData;
 }
 
-Object.keys(colorButton).forEach(name => {
+Object.keys(colorButton).forEach((name) => {
   colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
   colorButton[name].value = rgbToHex(color[name]);
 });
 
-Object.values(colorButton).forEach(button => {
-  button.addEventListener('change', e => {
+Object.values(colorButton).forEach((button) => {
+  button.addEventListener('change', (e) => {
     e.target.parentElement.style.backgroundColor = e.target.value;
     if (e.target.id === 'color-curr') {
       colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
@@ -214,15 +214,15 @@ Object.values(colorButton).forEach(button => {
     // }
     if (e.target.id === 'color-a') {
       color.a = hexToRGB(e.target.value);
-      localStorage.setItem('color-a', JSON.stringify(color.a))
+      localStorage.setItem('color-a', JSON.stringify(color.a));
     }
     if (e.target.id === 'color-b') {
       color.b = hexToRGB(e.target.value);
-      localStorage.setItem('color-b', JSON.stringify(color.b))
+      localStorage.setItem('color-b', JSON.stringify(color.b));
     }
   });
 
-  button.parentElement.parentElement.addEventListener('click', e => {
+  button.parentElement.parentElement.addEventListener('click', (e) => {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
       if (e.currentTarget.children[0].children[0].id === 'color-prev') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
@@ -238,7 +238,6 @@ Object.values(colorButton).forEach(button => {
         localStorage.setItem('color-prev', JSON.stringify(color.curr));
         color.prev = color.curr;
         color.curr = color.a;
-
       }
       if (e.currentTarget.children[0].children[0].id === 'color-b') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.b);
@@ -252,9 +251,9 @@ Object.values(colorButton).forEach(button => {
   });
 });
 
-Object.values(tools).forEach(tool => {
-  tool.addEventListener('click', e => {
-    Object.values(tools).forEach(button => {
+Object.values(tools).forEach((tool) => {
+  tool.addEventListener('click', () => {
+    Object.values(tools).forEach((button) => {
       button.classList.remove('tool-item--selected');
     });
 
@@ -273,9 +272,9 @@ canvas.addEventListener('mousedown', (e) => {
 
     ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
   }
-  if (selectedTool === 'bucket') { //&& !inProgress
+  if (selectedTool === 'bucket') { // && !inProgress
     ctx.fillStyle = colorToString(color.curr);
-    inProgress = true;
+    // inProgress = true;
     fill(e.layerX, e.layerY);
     // setTimeout(() => inProgress = false, 300);
 
@@ -298,10 +297,9 @@ canvas.addEventListener('mousemove', (e) => {
   }
 });
 
-document.addEventListener('mouseup', (e) => {
+document.addEventListener('mouseup', () => {
   if (selectedTool === 'pencil') {
     isDrawing = false;
     localStorage.setItem('imgData', canvas.toDataURL());
   }
 });
-
