@@ -47,10 +47,6 @@ const colorButton = {
   b: document.getElementById('color-b'),
 };
 
-// function rgbToHex(rgb) {
-//   return `#${((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1)}`;
-// }
-
 function hexToRGB(hex) {
   const m = hex.match(/^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
   return [
