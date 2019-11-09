@@ -34,8 +34,8 @@ const tools = {
 const color = {
   curr: JSON.parse(localStorage.getItem('color-curr')) || [0, 128, 0],
   prev: JSON.parse(localStorage.getItem('color-prev')) || [255, 255, 255],
-  a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 0],
-  b: JSON.parse(localStorage.getItem('color-b')) || [255, 255, 255],
+  a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 128],
+  b: JSON.parse(localStorage.getItem('color-b')) || [128, 0, 0],
 };
 
 const colorButton = {
