@@ -192,18 +192,34 @@ function colorPicker(x, y) {
   color.curr = pxData;
 }
 
+function selectTool(tl) {
+  Object.values(tools).forEach((button) => {
+    button.classList.remove('tool-item--selected');
+  });
+
+  selectedTool = tl.id;
+  localStorage.setItem('selectedTool', tl.id)
+  tl.classList.add('tool-item--selected');
+}
+
 Object.values(tools).forEach((tool) => {
   if (tool.id === selectedTool) tool.classList.add('tool-item--selected');
 
   tool.addEventListener('click', () => {
-    Object.values(tools).forEach((button) => {
-      button.classList.remove('tool-item--selected');
-    });
-
-    selectedTool = tool.id;
-    localStorage.setItem('selectedTool', tool.id)
-    tool.classList.add('tool-item--selected');
+    selectTool(tool);
   });
+});
+
+document.addEventListener('keypress', e => {
+  if (e.code === 'KeyP') {
+    selectTool(tools.pencilButton);
+  }
+  if (e.code === 'KeyB') {
+    selectTool(tools.bucketButton);
+  }
+  if (e.code === 'KeyC') {
+    selectTool(tools.colorPickerButton);
+  }
 });
 
 Object.keys(colorButton).forEach((name) => {
@@ -301,6 +317,3 @@ document.addEventListener('mouseup', () => {
 });
 
 
-document.addEventListener('keypress', e => {
-  if (e.code === 'KeyP') console.log(e)
-});
