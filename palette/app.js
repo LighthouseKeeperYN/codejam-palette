@@ -57,34 +57,30 @@ Object.values(colorButton).forEach(button => {
   });
 
   button.parentElement.parentElement.addEventListener('click', e => {
-    console.log(e.currentTarget)
-    console.log(e.target)
-    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
-      && e.currentTarget.children[0].children[0].id === 'color-prev') {
+    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
+      if (e.currentTarget.children[0].children[0].id === 'color-prev') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
+        [color.prev, color.curr] = [color.curr, color.prev];
+        localStorage.setItem('color-curr', JSON.stringify(color.curr));
+        localStorage.setItem('color-prev', JSON.stringify(color.prev));
+      }
+      if (e.currentTarget.children[0].children[0].id === 'color-a') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.a);
+        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+        localStorage.setItem('color-curr', JSON.stringify(color.a));
+        localStorage.setItem('color-prev', JSON.stringify(color.curr));
+        color.prev = color.curr;
+        color.curr = color.a;
 
-      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
-      localStorage.setItem('color-curr', JSON.stringify(color.prev));
-      color.curr = color.prev;
-    }
-    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
-      && e.currentTarget.children[0].children[0].id === 'color-a') {
-
-      colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-      localStorage.setItem('color-prev', JSON.stringify(color.curr));
-      color.prev = color.curr;
-      color.curr = color.a;
-      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.curr);
-      localStorage.setItem('color-curr', JSON.stringify(color.a));
-    }
-    if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT'
-      && e.currentTarget.children[0].children[0].id === 'color-b') {
-
-      colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-      localStorage.setItem('color-prev', JSON.stringify(color.curr));
-      color.prev = color.curr;
-      color.curr = color.b;
-      colorButton.curr.parentElement.style.backgroundColor = colorToString(color.curr);
-      localStorage.setItem('color-curr', JSON.stringify(color.b));
+      }
+      if (e.currentTarget.children[0].children[0].id === 'color-b') {
+        colorButton.curr.parentElement.style.backgroundColor = colorToString(color.b);
+        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+        localStorage.setItem('color-curr', JSON.stringify(color.b));
+        localStorage.setItem('color-prev', JSON.stringify(color.curr));
+        color.prev = color.curr;
+        color.curr = color.b;
+      }
     }
   });
 });
