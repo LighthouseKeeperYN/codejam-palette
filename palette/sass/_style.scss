@@ -103,6 +103,7 @@
 
   &--selected {
     background-color: rgb(209, 233, 255);
+    cursor: unset;
   }
 
   &__icon {
@@ -117,22 +118,6 @@
     border-radius: 50%;
     border: .1rem solid black;
     cursor: pointer;
-
-    &--grey {
-      background-color: #c4c4c4;
-    }
-
-    &--green {
-      background-color: #41F795;
-    }
-
-    &--red {
-      background-color: #F74141;
-    }
-
-    &--blue {
-      background-color: #41B6F7;
-    }
   }
 }
 

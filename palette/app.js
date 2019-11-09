@@ -12,7 +12,6 @@ if (localStorage.getItem('imgData')) {
 
 const pixelSize = 128;
 let selectedTool = 'pencil';
-// let inProgress = false;
 let isDrawing = false;
 
 const cursor = {
@@ -33,7 +32,7 @@ const tools = {
 };
 
 const color = {
-  curr: JSON.parse(localStorage.getItem('color-curr')) || [255, 255, 255],
+  curr: JSON.parse(localStorage.getItem('color-curr')) || [0, 128, 0],
   prev: JSON.parse(localStorage.getItem('color-prev')) || [255, 255, 255],
   a: JSON.parse(localStorage.getItem('color-a')) || [0, 0, 0],
   b: JSON.parse(localStorage.getItem('color-b')) || [255, 255, 255],
@@ -111,14 +110,13 @@ function fill(startX, startY) {
   const startR = startColor[0];
   const startG = startColor[1];
   const startB = startColor[2];
-  // const startA = startColor[3];
+
   const pixelStack = [[startX, startY]];
 
   function matchStartColor(pixelPos) {
     const r = imgData.data[pixelPos];
     const g = imgData.data[pixelPos + 1];
     const b = imgData.data[pixelPos + 2];
-    // const a = imgData.data[pixelPos + 3];
 
     return (r === startR && g === startG && b === startB);
   }
@@ -127,7 +125,7 @@ function fill(startX, startY) {
     imgData.data[pixelPos] = color.curr[0];
     imgData.data[pixelPos + 1] = color.curr[1];
     imgData.data[pixelPos + 2] = color.curr[2];
-    imgData.data[pixelPos + 3] = 255; // color.curr[3] * 255;
+    imgData.data[pixelPos + 3] = 255;
   }
 
   if (startColor[0] === color.curr[0]
@@ -208,10 +206,6 @@ Object.values(colorButton).forEach((button) => {
       color.curr = hexToRGB(e.target.value);
       localStorage.setItem('color-curr', JSON.stringify(color.curr));
     }
-    // if (e.target.id === 'color-prev') {
-    //   color.prev = hexToRGB(e.target.value);
-    //   localStorage.setItem('color-prev', JSON.stringify(color.prev))
-    // }
     if (e.target.id === 'color-a') {
       color.a = hexToRGB(e.target.value);
       localStorage.setItem('color-a', JSON.stringify(color.a));
@@ -272,11 +266,10 @@ canvas.addEventListener('mousedown', (e) => {
 
     ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
   }
-  if (selectedTool === 'bucket') { // && !inProgress
+  if (selectedTool === 'bucket') { 
     ctx.fillStyle = colorToString(color.curr);
-    // inProgress = true;
+
     fill(e.layerX, e.layerY);
-    // setTimeout(() => inProgress = false, 300);
 
     localStorage.setItem('imgData', canvas.toDataURL());
   }

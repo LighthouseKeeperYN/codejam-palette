@@ -105,7 +105,8 @@ button {
   .tool-item:hover {
     background-color: #d1e9ff; }
   .tool-item--selected {
-    background-color: #d1e9ff; }
+    background-color: #d1e9ff;
+    cursor: unset; }
   .tool-item__icon {
     width: 2.4rem;
     height: 2.4rem;
@@ -115,14 +116,6 @@ button {
     border-radius: 50%;
     border: .1rem solid black;
     cursor: pointer; }
-    .tool-item__color-circle--grey {
-      background-color: #c4c4c4; }
-    .tool-item__color-circle--green {
-      background-color: #41F795; }
-    .tool-item__color-circle--red {
-      background-color: #F74141; }
-    .tool-item__color-circle--blue {
-      background-color: #41B6F7; }
 
 .color-input {
   width: 2.4rem;
