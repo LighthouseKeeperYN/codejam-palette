@@ -205,6 +205,7 @@ Object.values(colorButton).forEach(button => {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
       if (e.currentTarget.children[0].children[0].id === 'color-prev') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
+        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
         [color.prev, color.curr] = [color.curr, color.prev];
         localStorage.setItem('color-curr', JSON.stringify(color.curr));
         localStorage.setItem('color-prev', JSON.stringify(color.prev));
