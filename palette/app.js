@@ -1,5 +1,6 @@
 const canvas = document.querySelector('.canvas');
 const ctx = canvas.getContext('2d');
+// if (localStorage.getItem('imgData')) ctx.putImageData(JSON.parse(localStorage.getItem('imgData'), 0, 0));
 
 const pixelSize = 128;
 let selectedTool = 'pencil';
@@ -176,6 +177,7 @@ function pencil() {
 
 Object.keys(colorButton).forEach(name => {
   colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
+  colorButton[name].value = rgbToHex(color[name]);
 });
 
 Object.values(colorButton).forEach(button => {
@@ -243,21 +245,24 @@ Object.values(tools).forEach(tool => {
 });
 
 canvas.addEventListener('mousedown', (e) => {
-  if (selectedTool === 'bucket') { //&& !inProgress
-    ctx.fillStyle = colorToString(color.curr);
-    inProgress = true;
-    fill(e.layerX, e.layerY);
-    // setTimeout(() => inProgress = false, 300);
-  }
   if (selectedTool === 'pencil') {
     ctx.fillStyle = colorToString(color.curr);
     isDrawing = true;
 
     cursor.last.x = e.layerX;
     cursor.last.y = e.layerY;
-
+    console.log(ctx.getImageData(0, 0, canvas.width, canvas.width))
     ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
   }
+  if (selectedTool === 'bucket') { //&& !inProgress
+    ctx.fillStyle = colorToString(color.curr);
+    inProgress = true;
+    fill(e.layerX, e.layerY);
+    // setTimeout(() => inProgress = false, 300);
+
+    // localStorage.setItem('imgData', JSON.stringify(ctx.getImageData(0, 0, canvas.width, canvas.width)));
+  }
+
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -275,6 +280,7 @@ canvas.addEventListener('mousemove', (e) => {
 document.addEventListener('mouseup', (e) => {
   if (selectedTool === 'pencil') {
     isDrawing = false;
+    // localStorage.setItem('imgData', JSON.stringify(ctx.getImageData(0, 0, canvas.width, canvas.width)));
   }
 });
 
