@@ -11,7 +11,7 @@ if (localStorage.getItem('imgData')) {
 }
 
 const pixelSize = 128;
-let selectedTool = 'pencil';
+let selectedTool = localStorage.getItem('selectedTool') || 'pencil';
 let isDrawing = false;
 
 const cursor = {
@@ -192,6 +192,20 @@ function colorPicker(x, y) {
   color.curr = pxData;
 }
 
+Object.values(tools).forEach((tool) => {
+  if (tool.id === selectedTool) tool.classList.add('tool-item--selected');
+
+  tool.addEventListener('click', () => {
+    Object.values(tools).forEach((button) => {
+      button.classList.remove('tool-item--selected');
+    });
+
+    selectedTool = tool.id;
+    localStorage.setItem('selectedTool', tool.id)
+    tool.classList.add('tool-item--selected');
+  });
+});
+
 Object.keys(colorButton).forEach((name) => {
   colorButton[name].parentElement.style.backgroundColor = colorToString(color[name]);
   colorButton[name].value = rgbToHex(color[name]);
@@ -245,17 +259,6 @@ Object.values(colorButton).forEach((button) => {
   });
 });
 
-Object.values(tools).forEach((tool) => {
-  tool.addEventListener('click', () => {
-    Object.values(tools).forEach((button) => {
-      button.classList.remove('tool-item--selected');
-    });
-
-    selectedTool = tool.id;
-    tool.classList.add('tool-item--selected');
-  });
-});
-
 canvas.addEventListener('mousedown', (e) => {
   if (selectedTool === 'pencil') {
     ctx.fillStyle = colorToString(color.curr);
@@ -266,7 +269,7 @@ canvas.addEventListener('mousedown', (e) => {
 
     ctx.fillRect(toPixel(e.layerX), toPixel(e.layerY), pixelSize, pixelSize);
   }
-  if (selectedTool === 'bucket') { 
+  if (selectedTool === 'bucket') {
     ctx.fillStyle = colorToString(color.curr);
 
     fill(e.layerX, e.layerY);
@@ -295,4 +298,9 @@ document.addEventListener('mouseup', () => {
     isDrawing = false;
     localStorage.setItem('imgData', canvas.toDataURL());
   }
+});
+
+
+document.addEventListener('keypress', e => {
+  if (e.code === 'KeyP') console.log(e)
 });
