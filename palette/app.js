@@ -215,7 +215,7 @@ document.addEventListener('keypress', (e) => {
   if (e.code === 'KeyB') {
     selectTool(tools.bucketButton);
   }
-  if (e.code === 'KeyC') {
+  if (e.code === 'KeyC') {g
     selectTool(tools.colorPickerButton);
   }
 });
