@@ -181,11 +181,8 @@ function fill(startX, startY) {
 
 function colorPicker(x, y) {
   const pxData = ctx.getImageData(x, y, 1, 1).data.slice(0, -1);
-
   colorButton.curr.parentElement.style.backgroundColor = colorToString(pxData);
   colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-  localStorage.setItem('color-curr', JSON.stringify(pxData));
-  localStorage.setItem('color-prev', JSON.stringify(color.curr));
   color.prev = color.curr;
   color.curr = pxData;
 }
@@ -196,7 +193,6 @@ function selectTool(tl) {
   });
 
   selectedTool = tl.id;
-  localStorage.setItem('selectedTool', tl.id);
   tl.classList.add('tool-item--selected');
 }
 
@@ -207,6 +203,15 @@ Object.values(tools).forEach((tool) => {
     selectTool(tool);
   });
 });
+
+window.onbeforeunload = () => {
+  localStorage.setItem('imgData', canvas.toDataURL());
+  localStorage.setItem('color-curr', JSON.stringify(color.curr));
+  localStorage.setItem('color-prev', JSON.stringify(color.prev));
+  localStorage.setItem('color-a', JSON.stringify(color.a));
+  localStorage.setItem('color-b', JSON.stringify(color.b));
+  localStorage.setItem('selectedTool', selectedTool);
+};
 
 document.addEventListener('keypress', (e) => {
   if (e.code === 'KeyP') {
@@ -230,42 +235,31 @@ Object.values(colorButton).forEach((button) => {
     e.target.parentElement.style.backgroundColor = e.target.value;
     if (e.target.id === 'color-curr') {
       colorButton.prev.parentElement.style.backgroundColor = rgbToHex(color.curr);
-      localStorage.setItem('color-prev', JSON.stringify(color.curr));
       color.curr = hexToRGB(e.target.value);
-      localStorage.setItem('color-curr', JSON.stringify(color.curr));
     }
     if (e.target.id === 'color-a') {
       color.a = hexToRGB(e.target.value);
-      localStorage.setItem('color-a', JSON.stringify(color.a));
     }
     if (e.target.id === 'color-b') {
       color.b = hexToRGB(e.target.value);
-      localStorage.setItem('color-b', JSON.stringify(color.b));
     }
   });
 
   button.parentElement.parentElement.addEventListener('click', (e) => {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
+      colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
+      
       if (e.currentTarget.children[0].children[0].id === 'color-prev') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
-        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
         [color.prev, color.curr] = [color.curr, color.prev];
-        localStorage.setItem('color-curr', JSON.stringify(color.curr));
-        localStorage.setItem('color-prev', JSON.stringify(color.prev));
       }
       if (e.currentTarget.children[0].children[0].id === 'color-a') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.a);
-        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-        localStorage.setItem('color-curr', JSON.stringify(color.a));
-        localStorage.setItem('color-prev', JSON.stringify(color.curr));
         color.prev = color.curr;
         color.curr = color.a;
       }
       if (e.currentTarget.children[0].children[0].id === 'color-b') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.b);
-        colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-        localStorage.setItem('color-curr', JSON.stringify(color.b));
-        localStorage.setItem('color-prev', JSON.stringify(color.curr));
         color.prev = color.curr;
         color.curr = color.b;
       }
@@ -287,8 +281,6 @@ canvas.addEventListener('mousedown', (e) => {
     ctx.fillStyle = colorToString(color.curr);
 
     fill(e.layerX, e.layerY);
-
-    localStorage.setItem('imgData', canvas.toDataURL());
   }
   if (selectedTool === 'color-picker') {
     colorPicker(e.layerX, e.layerY);
@@ -310,6 +302,5 @@ canvas.addEventListener('mousemove', (e) => {
 document.addEventListener('mouseup', () => {
   if (selectedTool === 'pencil') {
     isDrawing = false;
-    localStorage.setItem('imgData', canvas.toDataURL());
   }
 });
