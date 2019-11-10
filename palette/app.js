@@ -220,7 +220,7 @@ document.addEventListener('keypress', (e) => {
   if (e.code === 'KeyB') {
     selectTool(tools.bucketButton);
   }
-  if (e.code === 'KeyC') {g
+  if (e.code === 'KeyC') {
     selectTool(tools.colorPickerButton);
   }
 });
@@ -248,7 +248,7 @@ Object.values(colorButton).forEach((button) => {
   button.parentElement.parentElement.addEventListener('click', (e) => {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
       colorButton.prev.parentElement.style.backgroundColor = colorToString(color.curr);
-      
+
       if (e.currentTarget.children[0].children[0].id === 'color-prev') {
         colorButton.curr.parentElement.style.backgroundColor = colorToString(color.prev);
         [color.prev, color.curr] = [color.curr, color.prev];
