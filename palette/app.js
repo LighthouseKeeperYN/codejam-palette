@@ -52,8 +52,8 @@ const colors = {
 const shortCuts = {
   pencil: 'KeyP',
   bucket: 'KeyB',
-  colorPicker: 'KeyC'
-}
+  colorPicker: 'KeyC',
+};
 
 const pixelSize = 32;
 let selectedTool = localStorage.getItem('selectedTool') || toolsIDs.pencil;
@@ -216,7 +216,7 @@ window.onbeforeunload = function uploadToLocalStorage() {
   localStorage.setItem('selectedTool', selectedTool);
 };
 
-document.addEventListener('keypress', function activateShortCut(e) {
+document.addEventListener('keypress', function activateToolWithShortCut(e) {
   if (e.code === shortCuts.pencil) {
     selectTool(tools.pencilButton);
   }
@@ -248,7 +248,7 @@ Object.values(colorButtons).forEach((button) => {
     }
   });
 
-  button.parentElement.parentElement.addEventListener('click', function changeColor(e) {
+  button.parentElement.parentElement.addEventListener('click', (e) => {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
       colorButtons.prev.parentElement.style.backgroundColor = colorToString(colors.curr);
 
