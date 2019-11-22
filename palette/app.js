@@ -90,7 +90,7 @@ function drawLine(x0, y0, x1, y1) {
   }
 }
 
-function pencil() {
+function usePencil() {
   drawLine(
     scaleDown(cursor.last.x, pixelSize),
     scaleDown(cursor.last.y, pixelSize),
@@ -184,13 +184,13 @@ function colorPicker(x, y) {
   colors.curr = pxData;
 }
 
-function selectTool(tl) {
+function selectTool(tool) {
   Object.values(tools).forEach((button) => {
     button.classList.remove('tool-item--selected');
   });
 
-  selectedTool = tl.id;
-  tl.classList.add('tool-item--selected');
+  selectedTool = tool.id;
+  tool.classList.add('tool-item--selected');
 }
 
 Object.values(tools).forEach((tool) => {
@@ -289,7 +289,7 @@ canvas.addEventListener('mousemove', (e) => {
     cursor.curr.x = e.layerX;
     cursor.curr.y = e.layerY;
 
-    pencil();
+    usePencil();
 
     cursor.last.x = cursor.curr.x;
     cursor.last.y = cursor.curr.y;
