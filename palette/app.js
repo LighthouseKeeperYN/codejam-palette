@@ -49,6 +49,12 @@ const colors = {
   canvas: '#e5e5e5',
 };
 
+const shortCuts = {
+  pencil: 'KeyP',
+  bucket: 'KeyB',
+  colorPicker: 'KeyC'
+}
+
 const pixelSize = 32;
 let selectedTool = localStorage.getItem('selectedTool') || toolsIDs.pencil;
 let isDrawing = false;
@@ -90,7 +96,7 @@ function drawLine(x0, y0, x1, y1) {
   }
 }
 
-function usePencil() {
+function usePencilTool() {
   drawLine(
     scaleDown(cursor.last.x, pixelSize),
     scaleDown(cursor.last.y, pixelSize),
@@ -99,7 +105,7 @@ function usePencil() {
   );
 }
 
-function fill(startX, startY) {
+function useFillTool(startX, startY) {
   const imgData = ctx.getImageData(0, 0, 512, 512);
   const startColor = ctx.getImageData(startX, startY, 1, 1).data;
   const startR = startColor[0];
@@ -201,7 +207,7 @@ Object.values(tools).forEach((tool) => {
   });
 });
 
-window.onbeforeunload = () => {
+window.onbeforeunload = function uploadToLocalStorage() {
   localStorage.setItem('imgData', canvas.toDataURL());
   localStorage.setItem(colorButtonsIDs.colorCurr, JSON.stringify(colors.curr));
   localStorage.setItem(colorButtonsIDs.colorPrev, JSON.stringify(colors.prev));
@@ -210,14 +216,14 @@ window.onbeforeunload = () => {
   localStorage.setItem('selectedTool', selectedTool);
 };
 
-document.addEventListener('keypress', (e) => {
-  if (e.code === 'KeyP') {
+document.addEventListener('keypress', function activateShortCut(e) {
+  if (e.code === shortCuts.pencil) {
     selectTool(tools.pencilButton);
   }
-  if (e.code === 'KeyB') {
+  if (e.code === shortCuts.bucket) {
     selectTool(tools.bucketButton);
   }
-  if (e.code === 'KeyC') {
+  if (e.code === shortCuts.colorPicker) {
     selectTool(tools.colorPickerButton);
   }
 });
@@ -242,7 +248,7 @@ Object.values(colorButtons).forEach((button) => {
     }
   });
 
-  button.parentElement.parentElement.addEventListener('click', (e) => {
+  button.parentElement.parentElement.addEventListener('click', function changeColor(e) {
     if (e.target.tagName !== 'LABEL' && e.target.tagName !== 'INPUT') {
       colorButtons.prev.parentElement.style.backgroundColor = colorToString(colors.curr);
 
@@ -277,7 +283,7 @@ canvas.addEventListener('mousedown', (e) => {
   if (selectedTool === toolsIDs.bucket) {
     ctx.fillStyle = colorToString(colors.curr);
 
-    fill(e.layerX, e.layerY);
+    useFillTool(e.layerX, e.layerY);
   }
   if (selectedTool === toolsIDs.colorPicker) {
     colorPicker(e.layerX, e.layerY);
@@ -289,7 +295,7 @@ canvas.addEventListener('mousemove', (e) => {
     cursor.curr.x = e.layerX;
     cursor.curr.y = e.layerY;
 
-    usePencil();
+    usePencilTool();
 
     cursor.last.x = cursor.curr.x;
     cursor.last.y = cursor.curr.y;
