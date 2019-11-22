@@ -17,7 +17,7 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "lint": "node_modules/.bin/eslint --fix palette/app.js",
+    "lint": "node_modules/.bin/eslint --fix palette/app.js palette/utils.js palette/test.js",
     "compile:sass": "node-sass palette/sass/main.scss palette/css/style-comp.css",
     "prefix": "postcss --use autoprefixer -b \"last 5 versions\" palette/css/style-comp.css -o palette/style.css",
     "build:sass": "npm-run-all compile:sass prefix",

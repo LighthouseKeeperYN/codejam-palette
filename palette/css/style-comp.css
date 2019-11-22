@@ -1,0 +1,124 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit; }
+
+html {
+  font-size: 62.5%; }
+  @media (min-width: 112.5em) {
+    html {
+      font-size: 75%; } }
+  @media (max-width: 75em) {
+    html {
+      font-size: 56.25%; } }
+  @media (max-width: 56.25em) {
+    html {
+      font-size: 50%; } }
+
+body {
+  box-sizing: border-box;
+  background-color: #e5e5e5;
+  font-family: "Roboto", Tahoma, sans-serif;
+  color: rgba(0, 0, 0, 0.541327);
+  font-size: 1.6rem; }
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: rgba(0, 0, 0, 0.87); }
+
+ul {
+  list-style: none; }
+
+a {
+  color: inherit;
+  text-decoration: none; }
+
+button {
+  border: 0;
+  cursor: pointer; }
+
+.work-area {
+  position: relative;
+  background-color: #fff;
+  min-height: 100vh; }
+  .work-area__tools {
+    margin-left: 2.9rem;
+    margin-top: 7.9rem; }
+  .work-area__colors {
+    margin-left: 2.9rem;
+    margin-top: 9.2rem; }
+  .work-area__images {
+    position: absolute;
+    top: 14%;
+    right: 2.9rem; }
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  height: 4.8rem;
+  width: 100%;
+  padding: 0 .8rem .8rem;
+  background-color: #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.24), 0px 0px 4px rgba(0, 0, 0, 0.12); }
+  .app-bar__nav-button {
+    margin-right: 2.4rem; }
+  .app-bar__menu-button {
+    margin-left: auto; }
+
+.nav-icon {
+  width: 4rem;
+  height: 4rem;
+  background: url(assets/img/nav-icon.svg) center no-repeat; }
+
+.menu-icon {
+  width: 4rem;
+  height: 4rem;
+  background: url(assets/img/menu-icon.svg) center no-repeat; }
+
+.canvas {
+  position: absolute;
+  right: calc(50% - 256px);
+  top: 14%;
+  width: 512px;
+  height: 512px;
+  background-color: #e5e5e5;
+  image-rendering: pixelated; }
+
+.tool-panel {
+  width: 22.8rem;
+  padding-bottom: 3rem;
+  background-color: #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.24), 0px 0px 4px rgba(0, 0, 0, 0.12); }
+
+.tool-list:not(:last-child) {
+  border-bottom: 0.1rem solid rgba(0, 0, 0, 0.12); }
+
+.tool-item {
+  height: 5.7rem;
+  padding: 0 .6rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer; }
+  .tool-item:hover {
+    background-color: #d1e9ff; }
+  .tool-item--selected {
+    background-color: #d1e9ff;
+    cursor: unset; }
+  .tool-item__icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-left: 1.2rem;
+    margin-right: 3.3rem; }
+  .tool-item__color-circle {
+    border-radius: 50%;
+    border: .1rem solid black;
+    cursor: pointer; }
+
+.color-input {
+  width: 2.4rem;
+  height: 2.4rem;
+  transform: translate(-0.1rem, -0.1rem);
+  visibility: hidden; }

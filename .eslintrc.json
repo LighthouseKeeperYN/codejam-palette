@@ -10,11 +10,13 @@
     "no-constant-condition": ["error", { "checkLoops": false }],
     "prefer-destructuring": 0
 
-    
   },
   "env": {
     "browser": true,
     "node": true,
     "jasmine": true
+  },
+  "globals": {
+    "test": false
   }
 }
